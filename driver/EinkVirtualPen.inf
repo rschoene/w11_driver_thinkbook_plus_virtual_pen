@@ -1,0 +1,55 @@
+;
+; EinkVirtualPen.inf
+; Windows 11 x64 prototype INF for the VHF virtual pen driver.
+;
+
+[Version]
+Signature = "$WINDOWS NT$"
+Class = HIDClass
+ClassGuid = {745a17a0-74d3-11d0-b6fe-00a0c90f57da}
+Provider = %ManufacturerName%
+CatalogFile = EinkVirtualPen.cat
+DriverVer = 10/03/2026,1.0.0.0
+PnpLockDown = 1
+
+[DestinationDirs]
+DefaultDestDir = 12
+
+[SourceDisksNames]
+1 = %DiskName%,,,
+
+[SourceDisksFiles]
+EinkVirtualPen.sys = 1
+
+[Manufacturer]
+%ManufacturerName% = Standard,NTamd64
+
+[Standard.NTamd64]
+%DeviceDesc% = Install, ROOT\EINKVIRTUALPEN
+
+[Install.NTamd64]
+CopyFiles = DriverCopy
+AddReg = DriverAddReg
+
+[DriverCopy]
+EinkVirtualPen.sys
+
+[DriverAddReg]
+HKR,,DeviceInterfaceGUIDs,0x10000,"{8d3a6b16-1644-4ef6-b1d7-8c9a7d13e663}"
+
+[Install.NTamd64.Services]
+AddService = EinkVirtualPen,0x00000002,EinkVirtualPen_Service_Install
+
+[EinkVirtualPen_Service_Install]
+DisplayName = %ServiceName%
+ServiceBinary = %12%\EinkVirtualPen.sys
+ServiceDllImport = 
+ServiceStartType = 3
+ErrorControl = 1
+LoadOrderGroup = Extended Base
+
+[Strings]
+ManufacturerName = "Robert"
+DiskName = "EinkVirtualPen Driver Disk"
+DeviceDesc = "EinkVirtualPen Virtual Pen"
+ServiceName = "EinkVirtualPen"

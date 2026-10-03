@@ -1,0 +1,55 @@
+name: Release archive
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: windows-2022
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Configure MSVC environment
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: amd64
+
+      - name: Build x64 driver
+        shell: powershell
+        run: |
+          .\scripts\build-driver.ps1
+
+      - name: Create release zip
+        shell: powershell
+        run: |
+          $repoRoot = "$env:GITHUB_WORKSPACE"
+          $tag = "$env:GITHUB_REF_NAME"
+          $payloadRoot = Join-Path $repoRoot 'x64\Release'
+          if (-not (Test-Path $payloadRoot)) {
+            $payloadRoot = Join-Path $repoRoot 'driver'
+          }
+
+          if (-not (Test-Path $payloadRoot)) {
+            throw "No build output directory found at $payloadRoot"
+          }
+
+          $zipName = "EinkVirtualPen-$tag.zip"
+          $archivePath = Join-Path $repoRoot $zipName
+          $items = Get-ChildItem $payloadRoot -Force
+          Compress-Archive -Path $items.FullName -DestinationPath $archivePath -Force
+          Write-Host "Archive created: $archivePath"
+
+      - name: Publish GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            *.zip
+          generate_release_notes: true
