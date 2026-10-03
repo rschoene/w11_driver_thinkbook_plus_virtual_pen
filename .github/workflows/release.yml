@@ -15,7 +15,7 @@ jobs:
 
     steps:
       - name: Checkout source
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Build pen forwarder
         shell: powershell
@@ -28,7 +28,7 @@ jobs:
           Copy-Item dist\single\EinkPenInjector.exe "EinkPenInjector-$env:GITHUB_REF_NAME-win-x64.exe"
 
       - name: Publish GitHub release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           files: |
             EinkPenInjector-*.exe
