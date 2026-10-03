@@ -9,8 +9,8 @@ on:
 
 jobs:
   build:
-    # Driver is untested; run manually only.
-    if: github.event_name == 'workflow_dispatch'
+    # Driver is untested and not built locally; verify it on pull requests and manual runs.
+    if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
     runs-on: windows-2025
 
     steps:

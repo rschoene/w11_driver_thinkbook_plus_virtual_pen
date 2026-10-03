@@ -12,7 +12,7 @@ The repository contains a user-mode pen forwarder and an unfinished kernel-drive
 
 ## No-driver pen forwarder
 
-`bridge/EinkPenInjector` is a small WinForms desktop app (.NET Framework 4.8, which ships with Windows 10/11; single ~400 KB executable, nothing to install). It scans once per second for the ITE collection, reads its 18-byte reports using `GENERIC_READ` only and submits pen input with Windows' synthetic pointer API. It maps the digitizer's full coordinate range to the primary display, scales pressure to 0â€“1024, and lets you assign each of the two side buttons (front, second) in the UI to: nothing, pen barrel button, eraser, right click, Undo (Ctrl+Z) or Redo (Ctrl+Y). Defaults: front = barrel button, second = nothing. Choices apply immediately and are stored in `%LOCALAPPDATA%\EinkPenInjector\settings.ini`. The UI is localized (English, German; add languages in `bridge/EinkPenInjector/Loc.cs`). Forwarding starts automatically; closing or minimizing the window hides it to the notification area (tray icon: click to open, right-click for Open/Exit). Tilt is not mapped.
+`bridge/EinkPenInjector` is a small WinForms desktop app (.NET Framework 4.8, which ships with Windows 10/11; single ~400 KB executable, nothing to install). It scans once per second for the ITE collection, reads its 18-byte reports using `GENERIC_READ` only and submits pen input with Windows' synthetic pointer API. It maps the digitizer's full coordinate range to the primary display, scales pressure to 0ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“1024, and lets you assign each of the two side buttons (front, second) in the UI to: nothing, pen barrel button, eraser, right click, Undo (Ctrl+Z) or Redo (Ctrl+Y). Defaults: front = barrel button, second = nothing. Choices apply immediately and are stored in `%LOCALAPPDATA%\EinkPenInjector\settings.ini`. The UI is localized (English, German; add languages in `bridge/EinkPenInjector/Loc.cs`). Forwarding starts automatically; closing or minimizing the window hides it to the notification area (tray icon: click to open, right-click for Open/Exit). Tilt is not mapped.
 
 The result is software-injected pointer input, **not a physical HID device**; applications or anti-cheat systems may identify it as injected. This app is separate from the experimental kernel driver and does not install or communicate with that driver.
 
@@ -68,7 +68,7 @@ COL05 also exposes X/Y tilt in its HID capabilities; v1 deliberately leaves tilt
 
 ## Build prerequisites
 
-- Visual Studio 2022
+- Visual Studio 2022 or later (the CI uses Visual Studio 2026)
 - Windows SDK 10.0.28000 and the matching WDK, including the x64 desktop libraries
 - KMDF driver toolchain
 
@@ -76,11 +76,9 @@ The driver uses Virtual HID Framework (VHF), so it links against VhfKm.lib.
 
 ## Driver builds
 
-The driver is not part of GitHub releases or the automatic CI. GitHub runners lack Windows SDK 10.0.28000 and the WDK, so the `Driver compile check` workflow only runs manually (`workflow_dispatch`). Build locally instead:
+The driver is not part of GitHub releases. The `Driver compile check` workflow builds it on every pull request and on manual runs (`workflow_dispatch`) using the `windows-2025` runner (Visual Studio 2026, WDK extension). Pushes to branches only build the pen forwarder.
 
-1. run `scripts\build-driver.ps1`
-2. optionally run `scripts\package-release.ps1 -Version local` to create a zip
-3. verify the built files locally
+To build locally you need the prerequisites above and `scripts\build-driver.ps1`; `scripts\package-release.ps1 -Version local` creates a zip.
 
 ## Driver installation
 
