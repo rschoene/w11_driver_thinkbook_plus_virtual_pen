@@ -43,8 +43,8 @@ AddService = EinkVirtualPen,0x00000002,EinkVirtualPen_Service_Install
 [EinkVirtualPen_Service_Install]
 DisplayName = %ServiceName%
 ServiceBinary = %12%\EinkVirtualPen.sys
-ServiceDllImport = 
-ServiceStartType = 3
+ServiceType = 1
+StartType = 3
 ErrorControl = 1
 LoadOrderGroup = Extended Base
 

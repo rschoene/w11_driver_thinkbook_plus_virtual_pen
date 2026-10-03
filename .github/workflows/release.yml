@@ -1,4 +1,4 @@
-name: Release archive
+name: Release
 
 on:
   push:
@@ -10,6 +10,32 @@ permissions:
   contents: write
 
 jobs:
+  bridge:
+    runs-on: windows-2025
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Build pen forwarder
+        shell: powershell
+        run: |
+          .\scripts\publish-bridge.ps1
+
+      - name: Name release binary
+        shell: powershell
+        run: |
+          Copy-Item dist\single\EinkPenInjector.exe "EinkPenInjector-$env:GITHUB_REF_NAME-win-x64.exe"
+
+      - name: Publish GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            EinkPenInjector-*.exe
+            LICENSE
+            THIRD-PARTY-NOTICES.md
+          generate_release_notes: true
+
   build-and-release:
     runs-on: windows-2022
 
@@ -32,19 +58,19 @@ jobs:
         run: |
           $repoRoot = "$env:GITHUB_WORKSPACE"
           $tag = "$env:GITHUB_REF_NAME"
-          $payloadRoot = Join-Path $repoRoot 'x64\Release'
+          $payloadRoot = Join-Path $repoRoot 'x64\Release\EinkVirtualPen'
           if (-not (Test-Path $payloadRoot)) {
-            $payloadRoot = Join-Path $repoRoot 'driver'
+            throw "Driver package not found at $payloadRoot"
           }
 
-          if (-not (Test-Path $payloadRoot)) {
-            throw "No build output directory found at $payloadRoot"
+          $certificate = Join-Path $repoRoot 'x64\Release\EinkVirtualPen.cer'
+          if (Test-Path $certificate) {
+            Copy-Item -Path $certificate -Destination $payloadRoot -Force
           }
 
           $zipName = "EinkVirtualPen-$tag.zip"
           $archivePath = Join-Path $repoRoot $zipName
-          $items = Get-ChildItem $payloadRoot -Force
-          Compress-Archive -Path $items.FullName -DestinationPath $archivePath -Force
+          Compress-Archive -Path (Join-Path $payloadRoot '*') -DestinationPath $archivePath -Force
           Write-Host "Archive created: $archivePath"
 
       - name: Publish GitHub release

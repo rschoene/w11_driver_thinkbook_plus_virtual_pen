@@ -23,7 +23,7 @@ namespace EinkPenBridge
     public static class ReportMapping
     {
         // Source: ITE VID_048D&PID_8951 MI_03/COL05, 18-byte report ID 0x06.
-        public static bool TryParse(ReadOnlySpan<byte> src, out VirtualPenReport pen)
+        public static bool TryParse(byte[] src, out VirtualPenReport pen)
         {
             pen = default;
             if (src.Length < 18 || src[0] != 0x06) return false;

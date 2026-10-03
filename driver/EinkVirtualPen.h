@@ -1,6 +1,7 @@
 #pragma once
 #include <ntddk.h>
 #include <wdf.h>
+#include <hidclass.h>
 #include <vhf.h>
 #include <hidport.h>
 
