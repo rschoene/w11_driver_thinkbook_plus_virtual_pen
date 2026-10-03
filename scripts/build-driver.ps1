@@ -60,7 +60,7 @@ Write-Host "Using VS: $vsInstallPath"
 Write-Host "Using WDK/SDK root: $kitsRoot"
 Write-Host "Using SDK version: $($latestSdk.Name)"
 
-& $msbuild $projectPath /restore /m /nologo /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=WindowsKernelModeDriver10.0 "/p:SolutionDir=$repoRoot\"
+& $msbuild $projectPath /restore /m /nologo /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=WindowsKernelModeDriver10.0 "/p:WindowsTargetPlatformVersion=$($latestSdk.Name)" "/p:SolutionDir=$repoRoot\"
 if ($LASTEXITCODE -ne 0) {
     exit $LASTEXITCODE
 }

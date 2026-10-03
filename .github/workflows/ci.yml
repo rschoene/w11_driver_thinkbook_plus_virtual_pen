@@ -9,9 +9,9 @@ on:
 
 jobs:
   build:
-    # Driver is untested and the runner lacks the required SDK/WDK; run manually only.
+    # Driver is untested; run manually only.
     if: github.event_name == 'workflow_dispatch'
-    runs-on: windows-2022
+    runs-on: windows-2025
 
     steps:
       - name: Checkout source
